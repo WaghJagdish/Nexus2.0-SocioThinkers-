@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#6b1d3d",
+                    "on-primary-container": "#90d689",
+                    "on-tertiary-fixed": "#3e001d",
+                    "primary-fixed-dim": "#91d78a",
+                    "tertiary-fixed": "#ffd9e2",
+                    "on-tertiary-fixed-variant": "#7a2949",
+                    "surface-container-highest": "#e0e4db",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-container": "#d9e6da",
+                    "surface-bright": "#f7fbf1",
+                    "on-tertiary-container": "#ffaec6",
+                    "surface": "#f7fbf1",
+                    "error-container": "#ffdad6",
+                    "surface-container-low": "#f2f5ec",
+                    "surface-variant": "#e0e4db",
+                    "secondary": "#556158",
+                    "on-primary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "outline-variant": "#c0c9bb",
+                    "primary": "#00450d",
+                    "error": "#ba1a1a",
+                    "on-secondary-container": "#5b675e",
+                    "tertiary-container": "#883454",
+                    "surface-dim": "#d8dbd2",
+                    "outline": "#717a6d",
+                    "secondary-fixed-dim": "#bdcabe",
+                    "on-surface-variant": "#41493e",
+                    "surface-tint": "#2a6b2c",
+                    "on-error-container": "#93000a",
+                    "on-secondary-fixed-variant": "#3e4a41",
+                    "inverse-primary": "#91d78a",
+                    "on-background": "#191d17",
+                    "on-tertiary": "#ffffff",
+                    "surface-container": "#ecefe6",
+                    "on-surface": "#191d17",
+                    "primary-container": "#1b5e20",
+                    "secondary-fixed": "#d9e6da",
+                    "inverse-on-surface": "#eff2e9",
+                    "inverse-surface": "#2d322c",
+                    "on-secondary-fixed": "#131e17",
+                    "tertiary-fixed-dim": "#ffb1c8",
+                    "primary-fixed": "#acf4a4",
+                    "surface-container-high": "#e6e9e0",
+                    "on-primary-fixed-variant": "#0c5216",
+                    "on-primary-fixed": "#002203",
+                    "background": "#f7fbf1",
+                    "on-error": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "md": "16px",
+                    "xl": "40px",
+                    "gutter": "16px",
+                    "xs": "4px",
+                    "margin-mobile": "16px",
+                    "unit": "8px",
+                    "margin-desktop": "32px",
+                    "sm": "8px"
+            },
+            "fontFamily": {
+                "manrope": ["Manrope", "sans-serif"]
+            },
+            "fontSize": {
+                    "h1": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "h2": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "h3": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .ripple-circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid #C8E6C9;
+            opacity: 0.6;
+        }
+        .waveform-bar {
+            width: 4px;
+            border-radius: 2px;
+            background: linear-gradient(to top, #1B5E20, #4DB6AC);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-[#F1F8E9] font-manrope text-on-background min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="docked full-width top-0 sticky z-50 bg-[#E8F5E9]/80 backdrop-blur-xl border-b border-[#C8E6C9]/30 shadow-sm shadow-[#004D40]/5 flex justify-between items-center w-full px-6 py-4">
+<div class="flex items-center gap-4">
+<button class="text-[#1B5E20] hover:bg-[#C8E6C9]/50 transition-colors p-2 rounded-full">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="flex items-center gap-2 group">
+<div class="bg-gradient-to-br from-[#1B5E20] to-[#004D40] p-1.5 rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-white !text-xl" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+<span class="font-manrope text-lg font-extrabold tracking-tighter text-[#1B5E20]">KisanSetu</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative flex items-center mr-2">
+<button class="flex items-center gap-1 px-3 py-1.5 bg-[#C8E6C9]/40 hover:bg-[#C8E6C9]/60 text-[#1B5E20] rounded-full transition-all border border-[#1B5E20]/10">
+<span class="material-symbols-outlined !text-lg">language</span>
+<span class="text-xs font-bold uppercase tracking-wider">English</span>
+<span class="material-symbols-outlined !text-sm">expand_more</span>
+</button>
+<!-- Hidden dropdown placeholder for visual completeness -->
+<div class="hidden absolute top-full right-0 mt-2 w-32 bg-white rounded-lg shadow-xl border border-[#C8E6C9] overflow-hidden z-[60]">
+<a class="block px-4 py-2 text-xs font-semibold text-[#1B5E20] hover:bg-[#F1F8E9]" href="#">English</a>
+<a class="block px-4 py-2 text-xs font-semibold text-[#1B5E20] hover:bg-[#F1F8E9]" href="#">Hindi</a>
+<a class="block px-4 py-2 text-xs font-semibold text-[#1B5E20] hover:bg-[#F1F8E9]" href="#">Marathi</a>
+</div>
+</div><div class="w-10 h-10 rounded-full bg-primary-container border-2 border-white shadow-sm overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="professional agronomist with a friendly expression in a modern agricultural setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwUz0BRTVDOYKNeKnZ7OdTURY07c9NzJBLtMO0476hZ_n0f5EEHMG054c26cbdmhIPOuSnx8HciHxE1uFq8_UEGD6uZfaewP7PXsPuJZ2Sppgr17opR1ciIa7N50sfMtoSiA34IUaM93lCxolVRtJZ5WsmPowEF0Q97QMH-TvMvC4mwhfeG1uwV3_eOBq4Vwa-FVYyRVcNMx1OnAT0OFcZU4HYYH-56HvXwv_FEZue0a5qD67m4ZsaJ9QxYhsn7cr1MSd9izuLpdQ"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col items-center justify-center px-margin-mobile relative overflow-hidden">
+<!-- Voice Interaction Status -->
+<div class="text-center mb-12 z-10">
+<p class="font-h3 text-on-surface-variant opacity-80 mb-2">AgroVoice Assistant</p>
+<h1 class="font-h2 text-on-background">Listening for your query...</h1>
+<p class="font-body-md text-outline mt-4 max-w-xs mx-auto">"What is the nitrogen levels in Field B?" or "Schedule harvest for corn."</p>
+</div>
+<!-- Central Interaction Button with Ripple -->
+<div class="relative flex items-center justify-center w-full max-w-sm aspect-square mb-12">
+<!-- Ripple Layers (Decorative) -->
+<div class="ripple-circle w-64 h-64 scale-150 animate-pulse opacity-20"></div>
+<div class="ripple-circle w-48 h-48 scale-125 opacity-40"></div>
+<div class="ripple-circle w-32 h-32 opacity-60"></div>
+<!-- Main Pulse Button -->
+<button class="relative z-10 w-48 h-48 rounded-full bg-gradient-to-br from-[#1B5E20] to-[#2E7D32] shadow-[0_20px_50px_rgba(27,94,32,0.3)] flex items-center justify-center active:scale-95 transition-transform duration-200 group">
+<div class="absolute inset-0 rounded-full bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="material-symbols-outlined text-white !text-6xl" style="font-variation-settings: 'FILL' 1;">mic</span>
+</button>
+</div>
+<!-- Transcription Visualizer Card -->
+<div class="w-full max-w-md bg-white/60 backdrop-blur-md rounded-xl p-md border border-white/40 shadow-sm mb-xl">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-[#1B5E20] animate-ping"></div>
+<p class="text-body-md text-on-surface-variant italic">Transcribing live...</p>
+</div>
+</div>
+<!-- Waveform Visualizer -->
+<div class="w-full px-6 flex items-end justify-center gap-1 h-24 mb-24">
+<div class="waveform-bar h-12"></div>
+<div class="waveform-bar h-16"></div>
+<div class="waveform-bar h-8"></div>
+<div class="waveform-bar h-20"></div>
+<div class="waveform-bar h-24"></div>
+<div class="waveform-bar h-14"></div>
+<div class="waveform-bar h-18"></div>
+<div class="waveform-bar h-22"></div>
+<div class="waveform-bar h-10"></div>
+<div class="waveform-bar h-16"></div>
+<div class="waveform-bar h-24"></div>
+<div class="waveform-bar h-12"></div>
+<div class="waveform-bar h-8"></div>
+<div class="waveform-bar h-16"></div>
+<div class="waveform-bar h-20"></div>
+<div class="waveform-bar h-14"></div>
+<div class="waveform-bar h-10"></div>
+<div class="waveform-bar h-22"></div>
+<div class="waveform-bar h-16"></div>
+<div class="waveform-bar h-12"></div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-safe bg-white/80 backdrop-blur-2xl border-t border-[#C8E6C9]/50 shadow-[0_-4px_20px_rgba(0,77,64,0.08)] z-50 rounded-t-2xl">
+<a class="flex flex-col items-center justify-center text-[#004D40]/60 py-2 hover:text-[#1B5E20] transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-manrope text-[11px] font-semibold uppercase tracking-widest mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#004D40]/60 py-2 hover:text-[#1B5E20] transition-all" href="#">
+<span class="material-symbols-outlined">potted_plant</span>
+<span class="font-manrope text-[11px] font-semibold uppercase tracking-widest mt-1">Fields</span>
+</a>
+<!-- ACTIVE TAB: Voice -->
+<a class="flex flex-col items-center justify-center bg-gradient-to-br from-[#1B5E20] to-[#004D40] text-white rounded-xl px-4 py-2 mt-1 scale-95 duration-150 shadow-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">mic</span>
+<span class="font-manrope text-[11px] font-semibold uppercase tracking-widest">Voice</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#004D40]/60 py-2 hover:text-[#1B5E20] transition-all" href="#">
+<span class="material-symbols-outlined">sync_lock</span>
+<span class="font-manrope text-[11px] font-semibold uppercase tracking-widest mt-1">Sync</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#004D40]/60 py-2 hover:text-[#1B5E20] transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-manrope text-[11px] font-semibold uppercase tracking-widest mt-1">Settings</span>
+</a>
+</nav>
+</body></html>

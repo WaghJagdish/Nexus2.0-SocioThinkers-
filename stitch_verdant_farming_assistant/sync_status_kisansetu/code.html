@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .font-manrope { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#3e4a41",
+                        "secondary-fixed-dim": "#bdcabe",
+                        "surface-variant": "#e0e4db",
+                        "surface-container-highest": "#e0e4db",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#eff2e9",
+                        "on-secondary-fixed": "#131e17",
+                        "surface": "#f7fbf1",
+                        "primary-container": "#1b5e20",
+                        "surface-tint": "#2a6b2c",
+                        "tertiary-fixed": "#ffd9e2",
+                        "tertiary": "#6b1d3d",
+                        "outline-variant": "#c0c9bb",
+                        "secondary": "#556158",
+                        "tertiary-container": "#883454",
+                        "inverse-primary": "#91d78a",
+                        "on-secondary-container": "#5b675e",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#ffb1c8",
+                        "surface-container": "#ecefe6",
+                        "surface-dim": "#d8dbd2",
+                        "secondary-fixed": "#d9e6da",
+                        "on-tertiary-fixed": "#3e001d",
+                        "on-tertiary-container": "#ffaec6",
+                        "on-error-container": "#93000a",
+                        "on-surface": "#191d17",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#41493e",
+                        "secondary-container": "#d9e6da",
+                        "surface-bright": "#f7fbf1",
+                        "primary": "#00450d",
+                        "surface-container-low": "#f2f5ec",
+                        "on-primary-fixed": "#002203",
+                        "on-background": "#191d17",
+                        "inverse-surface": "#2d322c",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-container": "#90d689",
+                        "background": "#f7fbf1",
+                        "on-tertiary-fixed-variant": "#7a2949",
+                        "on-primary-fixed-variant": "#0c5216",
+                        "surface-container-high": "#e6e9e0",
+                        "primary-fixed": "#acf4a4",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#91d78a",
+                        "error": "#ba1a1a",
+                        "outline": "#717a6d",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "gutter": "16px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "unit": "8px",
+                        "margin-mobile": "16px",
+                        "sm": "8px",
+                        "xl": "40px",
+                        "margin-desktop": "32px"
+                    },
+                    "fontSize": {
+                        "h3": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "h1": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "h2": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-background font-manrope text-on-surface min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="bg-[#E8F5E9]/80 backdrop-blur-xl docked full-width top-0 sticky z-50 border-b border-[#C8E6C9]/30 shadow-sm shadow-[#004D40]/5 flex justify-between items-center w-full px-6 py-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#1B5E20]">menu</span>
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-gradient-to-br from-[#1B5E20] to-[#4CAF50] rounded-lg flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-white text-xl">psychology_alt</span>
+</div>
+<h1 class="text-[#1B5E20] font-extrabold tracking-tighter text-xl">KisanSetu</h1>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center gap-1 bg-[#E8F5E9] border border-[#C8E6C9] rounded-full px-2 py-1">
+<span class="material-symbols-outlined text-[16px] text-[#1B5E20]">language</span>
+<div class="flex gap-2 text-[11px] font-bold text-[#1B5E20]">
+<span class="cursor-pointer">EN</span>
+<span class="text-[#C8E6C9]">|</span>
+<span class="cursor-pointer opacity-60">HI</span>
+</div>
+</div>
+<div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center overflow-hidden border border-[#C8E6C9]">
+<img alt="User Profile" data-alt="close-up portrait of a professional agronomist smiling against a background of lush green fields" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADs-frcNeq6YnonUhqYBIZwu6X93PbVPDYO2_7wvcdEBkwJjSyZOZglWATiqI2sujHXTgQjGkf2gFBtWshcQUL9YD3n6RsE85VeJHWO5fB4t4Any3xVihc6qhqwlWw5xAim6XkJVzY1W0te_8YkvGsPXCKqzKyFM5KdGEXDPxy8UzEe62SRd9Dp0Xf22HaUZCw2zklsbN3tiu5qR6RaEM-fScMX9U9H8jjuaDBddffDqEo5S_oRs9JnFyHjIn6fQXab1D7NvuZ_wA"/>
+</div>
+</div>
+</header>
+<main class="max-w-4xl mx-auto px-margin-mobile md:px-margin-desktop mt-8 space-y-xl">
+<!-- Large Circular Progress Indicator Section -->
+<section class="flex flex-col items-center justify-center py-lg">
+<div class="relative flex items-center justify-center w-64 h-64">
+<!-- Outer Progress Circle -->
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-secondary-container" cx="128" cy="128" fill="transparent" r="120" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-[#1B5E20]" cx="128" cy="128" fill="transparent" r="120" stroke="currentColor" stroke-dasharray="753" stroke-dashoffset="188" stroke-linecap="round" stroke-width="12"></circle>
+</svg>
+<!-- Inner Glass Label -->
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+<div class="w-16 h-16 bg-[#1B5E20]/10 rounded-full flex items-center justify-center mb-2">
+<span class="material-symbols-outlined text-4xl text-[#1B5E20] animate-spin-slow" style="animation: spin 8s linear infinite;">sync</span>
+</div>
+<p class="font-h2 text-[#1B5E20] leading-none">82%</p>
+<p class="font-label-caps text-[#004D40]/60 uppercase mt-1">Syncing Data...</p>
+</div>
+</div>
+<button class="mt-xl px-12 py-4 bg-gradient-to-r from-[#1B5E20] via-[#2E7D32] to-[#4CAF50] text-white font-bold rounded-full shadow-lg shadow-[#004D40]/20 active:scale-95 transition-transform flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">sync</span>
+            Sync Now
+        </button>
+</section>
+<!-- Bento Grid for Synced and Pending Items -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<!-- Recently Synced Items -->
+<div class="glass-panel p-lg rounded-xl border border-[#C8E6C9]/40 shadow-sm">
+<h3 class="font-h3 text-[#1B5E20] mb-md flex items-center gap-2">
+<span class="material-symbols-outlined text-[#1B5E20]">check_circle</span>
+                Recently Synced
+            </h3>
+<div class="space-y-sm">
+<!-- Synced Item -->
+<div class="flex items-center justify-between p-md bg-white/60 rounded-lg border border-[#C8E6C9]/30">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-[#1B5E20] flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-white text-xl">potted_plant</span>
+</div>
+<div>
+<p class="font-body-md font-bold text-[#1B5E20]">Fields</p>
+<p class="text-xs text-on-surface-variant">Last updated: 2 mins ago</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#1B5E20] text-lg">verified</span>
+</div>
+<!-- Synced Item -->
+<div class="flex items-center justify-between p-md bg-white/60 rounded-lg border border-[#C8E6C9]/30">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-[#1B5E20] flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-white text-xl">science</span>
+</div>
+<div>
+<p class="font-body-md font-bold text-[#1B5E20]">Soil Data</p>
+<p class="text-xs text-on-surface-variant">Last updated: 14 mins ago</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#1B5E20] text-lg">verified</span>
+</div>
+<!-- Synced Item -->
+<div class="flex items-center justify-between p-md bg-white/60 rounded-lg border border-[#C8E6C9]/30">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-[#1B5E20] flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-white text-xl">cloud</span>
+</div>
+<div>
+<p class="font-body-md font-bold text-[#1B5E20]">Weather</p>
+<p class="text-xs text-on-surface-variant">Last updated: 1 hour ago</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#1B5E20] text-lg">verified</span>
+</div>
+</div>
+</div>
+<!-- Pending Uploads -->
+<div class="glass-panel p-lg rounded-xl border border-[#C8E6C9]/40 shadow-sm">
+<h3 class="font-h3 text-[#1B5E20] mb-md flex items-center gap-2">
+<span class="material-symbols-outlined">pending_actions</span>
+                Pending Uploads
+            </h3>
+<div class="space-y-sm">
+<!-- Pending Item -->
+<div class="flex items-center justify-between p-md bg-[#F2F5EC]/80 rounded-lg border border-[#C8E6C9]/30">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-[#C8E6C9]/50 flex items-center justify-center">
+<span class="material-symbols-outlined text-[#1B5E20] text-xl">image</span>
+</div>
+<div>
+<p class="font-body-md font-bold text-[#1B5E20]">Crop Imagery</p>
+<p class="text-xs text-on-surface-variant">84.2 MB • Waiting for Wi-Fi</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#1B5E20]/60 text-lg">schedule</span>
+</div>
+<!-- Pending Item -->
+<div class="flex items-center justify-between p-md bg-[#F2F5EC]/80 rounded-lg border border-[#C8E6C9]/30">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-[#C8E6C9]/50 flex items-center justify-center">
+<span class="material-symbols-outlined text-[#1B5E20] text-xl">monitoring</span>
+</div>
+<div>
+<p class="font-body-md font-bold text-[#1B5E20]">Sensor Logs</p>
+<p class="text-xs text-on-surface-variant">12 KB • Queued</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#1B5E20]/60 text-lg">schedule</span>
+</div>
+<div class="mt-md p-md bg-[#1B5E20]/5 rounded-lg border border-[#1B5E20]/10 border-dashed text-center">
+<p class="text-xs text-[#1B5E20]/80 italic">Auto-sync is enabled. Connect to power for faster background processing.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- System Health Overlay -->
+<section class="glass-panel p-xl rounded-2xl flex flex-col md:flex-row items-center gap-xl border border-[#C8E6C9]/50">
+<div class="flex-shrink-0 w-32 h-32 rounded-2xl overflow-hidden shadow-md ring-4 ring-white/50">
+<img alt="Satellite Connection" class="w-full h-full object-cover" data-alt="top-down satellite view of segmented green agricultural fields with high-contrast irrigation lines" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNYNwwILFVIeb1grePjfzbFTyVIvkdbbNZiPVRAX_V060X23jKb403MEwV8SAyR-Tl7Ujxhj89KaTDL5Fvxy8MWC-wgJTVaQnb8ABErZs8AI2znVYZZB7L92pwXSqK-YzQ8ljxLqYDKTlliGkvUhy_vAVuZdPgRlEXQi8t6ZIw4nF4SBzAcHHKMHTLCOzzfWaa6hXzmr-2KuVaQm9ktyhdB57y9FnWg47rQTRqbEhOO5ZDo_Vn5ppwHvAENX4M6hpdreI7YRDCeks"/>
+</div>
+<div class="text-center md:text-left flex-1">
+<h4 class="font-h3 text-[#1B5E20]">Network Optimization</h4>
+<p class="font-body-md text-on-surface-variant mt-sm leading-relaxed">KisanSetu is currently compressing your field data for low-bandwidth satellite transmission. Priority is given to critical irrigation and health alerts.</p>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-safe bg-white/90 backdrop-blur-2xl border-t border-[#C8E6C9]/50 shadow-[0_-4px_20px_rgba(0,77,64,0.08)] z-50 rounded-t-3xl h-24">
+<div class="flex flex-col items-center justify-center text-[#004D40]/60 py-2 hover:text-[#1B5E20] transition-all cursor-pointer">
+<span class="material-symbols-outlined text-2xl">dashboard</span>
+<span class="font-manrope text-[10px] font-bold uppercase tracking-widest mt-1">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#004D40]/60 py-2 hover:text-[#1B5E20] transition-all cursor-pointer">
+<span class="material-symbols-outlined text-2xl">potted_plant</span>
+<span class="font-manrope text-[10px] font-bold uppercase tracking-widest mt-1">Fields</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#004D40]/60 py-2 hover:text-[#1B5E20] transition-all cursor-pointer">
+<span class="material-symbols-outlined text-2xl">mic</span>
+<span class="font-manrope text-[10px] font-bold uppercase tracking-widest mt-1">Voice</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-gradient-to-br from-[#1B5E20] to-[#004D40] text-white rounded-2xl px-6 py-3 -mt-4 shadow-lg shadow-[#1B5E20]/30 transition-transform active:scale-90">
+<span class="material-symbols-outlined text-2xl">sync</span>
+<span class="font-manrope text-[10px] font-bold uppercase tracking-widest mt-1">Sync</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#004D40]/60 py-2 hover:text-[#1B5E20] transition-all cursor-pointer">
+<span class="material-symbols-outlined text-2xl">settings</span>
+<span class="font-manrope text-[10px] font-bold uppercase tracking-widest mt-1">Settings</span>
+</div>
+</nav>
+<style>
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+</style>
+</body></html>

@@ -1,0 +1,22 @@
+.fields { padding: 14px 16px 80px; }
+
+.fields__header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 16px; gap: 8px;
+}
+.fields__grid { display: flex; flex-direction: column; gap: 14px; }
+
+.field-card {
+  border-radius: 18px; overflow: hidden;
+  border: 1px solid #C8E6C9; box-shadow: var(--shadow-card);
+  background: white; transition: transform var(--transition-base);
+}
+.field-card:active { transform: scale(0.99); }
+.field-card__top {
+  position: relative; padding: 14px; min-height: 100px;
+  display: flex; flex-direction: column; justify-content: flex-end; gap: 4px;
+}
+.field-card__badge-wrap { position: absolute; top: 12px; left: 12px; }
+.field-card__body { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.field-metric { display: flex; flex-direction: column; gap: 3px; }
+.field-card__actions { display: flex; gap: 8px; margin-top: 4px; }
