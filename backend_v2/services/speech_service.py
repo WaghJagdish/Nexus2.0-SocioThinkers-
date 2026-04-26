@@ -58,11 +58,21 @@ class SpeechService:
             return cached
 
         try:
+            # Detect actual audio format from magic bytes for proper filename
+            if audio_bytes[:4] == b"\x1aE\xdf\xa3":
+                filename, mime = "audio.webm", "audio/webm"
+            elif audio_bytes[:4] == b"OggS":
+                filename, mime = "audio.ogg", "audio/ogg"
+            elif audio_bytes[:4] == b"RIFF":
+                filename, mime = "audio.wav", "audio/wav"
+            else:
+                filename, mime = "audio.webm", "audio/webm"
+
             async with httpx.AsyncClient(timeout=self.settings.SARVAM_TIMEOUT) as client:
                 response = await client.post(
                     f"{SARVAM_BASE_URL}/speech-to-text",
                     headers=self._get_headers(),
-                    files={"file": ("audio.wav", io.BytesIO(audio_bytes), "audio/wav")},
+                    files={"file": (filename, io.BytesIO(audio_bytes), mime)},
                     data={
                         "language_code": lang_code,
                         "model": "saarika:v2.5",

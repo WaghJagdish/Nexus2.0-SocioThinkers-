@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppData } from '../context/AppDataContext';
 import { useLanguage } from '../context/LanguageContext';
 import CropRecommendations from '../components/CropRecommendations';
@@ -15,20 +15,30 @@ const SPEECH_LANG_MAP = {
 };
 
 export default function Voice() {
-  const { t, lang } = useLanguage();
+  const { lang, t } = useLanguage();
+  const navigate = useNavigate();
+  const { profile, runVoiceQuery, runTextQuery, status, documentUrl } = useAppData();
   const location = useLocation();
-  const { runVoiceQuery, runTextQuery, status, documentUrl, profile } = useAppData();
   const [listening, setListening] = useState(false);
   const [message, setMessage] = useState('');
   const [text, setText] = useState(location.state?.initialText || '');
   const [waveHeights, setWaveHeights] = useState(WAVE_HEIGHTS);
   const [sessionResult, setSessionResult] = useState(null);
   const [liveTranscript, setLiveTranscript] = useState('');
-  const intervalRef = useRef(null);
-  const recorderRef = useRef(null);
-  const chunksRef = useRef([]);
+  const [recording, setRecording] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const [transcript, setTranscript] = useState('');
+  const [lastTranscript, setLastTranscript] = useState('');
+  const [responseAudio, setResponseAudio] = useState(null);
+  const [showHelp, setShowHelp] = useState(false);
+  const [recordDuration, setRecordDuration] = useState(0);
+
+  const mediaRecorderRef = useRef(null);
   const streamRef = useRef(null);
-  const recognitionRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const isCancelledRef = useRef(false);
+  const recordTimerRef = useRef(null);
+  const intervalRef = useRef(null);
 
   useEffect(() => {
     if (location.state?.initialText) {
@@ -51,12 +61,8 @@ export default function Voice() {
   // Cleanup on unmount: stop recording and release mic
   useEffect(() => {
     return () => {
-      if (recognitionRef.current) {
-        try { recognitionRef.current.abort(); } catch { /* ignore */ }
-        recognitionRef.current = null;
-      }
-      if (recorderRef.current && recorderRef.current.state !== 'inactive') {
-        recorderRef.current.stop();
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+        mediaRecorderRef.current.stop();
       }
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
@@ -65,57 +71,7 @@ export default function Voice() {
     };
   }, []);
 
-  // --- Live Speech Recognition (Web Speech API) ---
-  const startSpeechRecognition = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return; // gracefully degrade
-
-    const recognition = new SpeechRecognition();
-    recognition.lang = SPEECH_LANG_MAP[lang] || 'en-IN';
-    recognition.continuous = true;
-    recognition.interimResults = true;
-
-    recognition.onresult = (event) => {
-      let interim = '';
-      let final = '';
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          final += transcript + ' ';
-        } else {
-          interim += transcript;
-        }
-      }
-      setLiveTranscript((prev) => {
-        const base = final ? (prev.replace(/…$/, '') + final).trim() : prev;
-        return interim ? `${base} ${interim}…`.trim() : base;
-      });
-    };
-
-    recognition.onerror = (event) => {
-      // 'no-speech' is normal if user hasn't spoken yet
-      if (event.error !== 'no-speech' && event.error !== 'aborted') {
-        console.warn('SpeechRecognition error:', event.error);
-      }
-    };
-
-    recognition.onend = () => {
-      // Auto-restart if still listening (browser may stop it)
-      if (recognitionRef.current && listening) {
-        try { recognitionRef.current.start(); } catch { /* already running */ }
-      }
-    };
-
-    recognitionRef.current = recognition;
-    try { recognition.start(); } catch { /* ignore */ }
-  };
-
-  const stopSpeechRecognition = () => {
-    if (recognitionRef.current) {
-      try { recognitionRef.current.abort(); } catch { /* ignore */ }
-      recognitionRef.current = null;
-    }
-  };
+  // No browser SpeechRecognition — rely on backend Sarvam STT for accurate transcription
 
   const getSupportedMimeType = () => {
     const types = [
@@ -141,18 +97,25 @@ export default function Voice() {
     }
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          sampleRate: 16000,
+        },
+      });
       streamRef.current = stream;
-      chunksRef.current = [];
+      audioChunksRef.current = [];
 
       const mimeType = getSupportedMimeType();
       const options = mimeType ? { mimeType } : {};
       const recorder = new MediaRecorder(stream, options);
-      recorderRef.current = recorder;
+      mediaRecorderRef.current = recorder;
 
       recorder.ondataavailable = (event) => {
         if (event.data && event.data.size > 0) {
-          chunksRef.current.push(event.data);
+          audioChunksRef.current.push(event.data);
         }
       };
 
@@ -163,13 +126,13 @@ export default function Voice() {
           streamRef.current = null;
         }
 
-        if (chunksRef.current.length === 0) {
+        if (audioChunksRef.current.length === 0) {
           setMessage(t('voice.micNotSupported'));
           return;
         }
 
         const blobType = recorder.mimeType || mimeType || 'audio/webm';
-        const blob = new Blob(chunksRef.current, { type: blobType });
+        const blob = new Blob(audioChunksRef.current, { type: blobType });
 
         if (blob.size < 100) {
           setMessage(t('voice.micNotSupported'));
@@ -194,7 +157,10 @@ export default function Voice() {
       // Use timeslice (1s chunks) so ondataavailable fires during recording
       recorder.start(1000);
       setListening(true);
-      startSpeechRecognition();
+      setRecordDuration(0);
+      recordTimerRef.current = setInterval(() => {
+        setRecordDuration((d) => d + 1);
+      }, 1000);
     } catch (error) {
       console.error('getUserMedia error:', error);
       setMessage(error.message || t('voice.micNotSupported'));
@@ -202,9 +168,12 @@ export default function Voice() {
   };
 
   const stopRecording = () => {
-    stopSpeechRecognition();
-    if (recorderRef.current && recorderRef.current.state !== 'inactive') {
-      recorderRef.current.stop();
+    if (recordTimerRef.current) {
+      clearInterval(recordTimerRef.current);
+      recordTimerRef.current = null;
+    }
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
     }
     setListening(false);
   };
@@ -268,13 +237,13 @@ export default function Voice() {
       <div className="voice-transcript glass">
         <div className="voice-transcript__live">
           {listening && <div className="voice-live-dot" />}
-          {listening && liveTranscript ? (
+          {listening ? (
             <div>
               <p className="text-body-sm" style={{ color: 'var(--color-primary)', marginBottom: 4, fontWeight: 600 }}>
-                {t('voice.liveTranscript')}
+                {t('voice.recording') || 'Recording...'}
               </p>
               <p className="text-body-md" style={{ color: 'var(--color-on-surface)' }}>
-                {liveTranscript}
+                {Math.floor(recordDuration / 60)}:{String(recordDuration % 60).padStart(2, '0')}
               </p>
             </div>
           ) : status.loading ? (
