@@ -1,9 +1,11 @@
 import base64
 import json
 import os
+import re
 from typing import Dict, Any, Optional
 
 import httpx
+from duckduckgo_search import DDGS
 from langchain_core.messages import SystemMessage, HumanMessage
 
 from core.logging import get_logger
@@ -13,7 +15,7 @@ from services.crop_knowledge_base import CropKnowledgeBase
 logger = get_logger(__name__)
 
 
-NVIDIA_NIM_VISION_MODEL = os.environ.get("NVIDIA_NIM_VISION_MODEL", "moonshotai/kimi-k2.5")
+NVIDIA_NIM_VISION_MODEL = os.environ.get("NVIDIA_NIM_VISION_MODEL", "meta/llama-3.2-90b-vision-instruct")
 NVIDIA_NIM_URL = os.environ.get(
     "NVIDIA_NIM_URL",
     "https://integrate.api.nvidia.com/v1/chat/completions"
@@ -22,7 +24,7 @@ NVIDIA_NIM_URL = os.environ.get(
 # Fallback vision prompt when NVIDIA NIM is unavailable / for demo
 VISION_ANALYSIS_PROMPT = """You are an expert agricultural scientist analyzing crop images.
 Look at the provided image and determine:
-1. What crop is shown
+1. What crop is shown — return ONLY the common English crop name, e.g. "Sugarcane", NOT "Sugarcane (Saccharum officinarum)"
 2. Overall health status (score 0-100)
 3. Any visible diseases, pests, or nutrient deficiencies
 4. Growth stage / estimated days to harvest
@@ -30,7 +32,7 @@ Look at the provided image and determine:
 
 Return ONLY a valid JSON object matching this schema:
 {
-    "crop_type": "crop name in English",
+    "crop_type": "crop name in English (common name only, no scientific name)",
     "health_score": 0-100 integer,
     "health_status": "short description of overall condition",
     "disease_detected": true/false,
@@ -41,6 +43,17 @@ Return ONLY a valid JSON object matching this schema:
     "confidence": 0.0-1.0
 }
 """
+
+
+def _normalize_crop_name(raw: str) -> str:
+    """Strip scientific names, extra words, and normalize for lookup."""
+    if not raw:
+        return ""
+    # Remove text in parentheses
+    cleaned = re.sub(r"\s*\([^)]*\)", "", raw)
+    # Remove extra descriptors like "field of", "crop of"
+    cleaned = re.sub(r"\b(field of|crop of| plantation of|plant of)\b", "", cleaned, flags=re.I)
+    return cleaned.strip().lower()
 
 
 class CropAnalysisService:
@@ -97,11 +110,12 @@ class CropAnalysisService:
                     ],
                 }
             ],
-            "max_tokens": 16384,
+            "max_tokens": 512,
             "temperature": 1.0,
             "top_p": 1.0,
+            "frequency_penalty": 0.0,
+            "presence_penalty": 0.0,
             "stream": False,
-            "chat_template_kwargs": {"thinking": True},
         }
 
         async with httpx.AsyncClient(timeout=120.0) as client:
@@ -160,6 +174,59 @@ class CropAnalysisService:
         }
 
     # ------------------------------------------------------------------
+    # Helpers: price lookup + localization
+    # ------------------------------------------------------------------
+
+    async def _fetch_market_price(self, crop: str, language: str) -> str:
+        """Try knowledge base first, then web search for real-time prices."""
+        price = self.kb.get_price(crop)
+        if price and "varies" not in price.lower() and "check" not in price.lower():
+            return price
+        try:
+            query = f"{crop} mandi price today India per quintal"
+            ddgs = DDGS()
+            results = list(ddgs.text(query, max_results=3))
+            snippets = " ".join([r.get("body", "") for r in results[:2]])
+            # Extract any price-like numbers
+            import re
+            prices = re.findall(r"₹?\s*([\d,]+(?:\s*-\s*[\d,]+)?)\s*(?:Rs|rupees|quintal|qtl|ton)?", snippets, re.I)
+            if prices:
+                return prices[0]
+        except Exception as e:
+            logger.warning(f"Web search for {crop} price failed: {e}")
+        return price if price else "Market price varies by mandi"
+
+    async def _localize_texts(self, texts: Dict[str, str], language: str) -> Dict[str, str]:
+        """Translate a dict of English agricultural texts to the target language via LLM."""
+        if language.lower() in ("en", "english"):
+            return texts
+        if not self.llm:
+            return texts
+
+        lang_names = {"hi": "Hindi", "mr": "Marathi", "en": "English"}
+        target = lang_names.get(language.lower(), "Hindi")
+
+        prompt = (
+            f"Translate the following agricultural advisory texts into {target}. "
+            f"Keep technical terms (disease names, chemical names) in English. "
+            f"Return ONLY a JSON object with the exact same keys.\n\n"
+            f"{json.dumps(texts, indent=2)}"
+        )
+        try:
+            messages = [
+                SystemMessage(content=f"You are a precise agricultural translator. Translate into {target} language only."),
+                HumanMessage(content=prompt),
+            ]
+            response = await self.llm.invoke(messages, temperature=0.0)
+            raw = response.strip().replace("```json", "").replace("```", "").strip()
+            parsed = json.loads(raw)
+            if isinstance(parsed, dict) and set(parsed.keys()) == set(texts.keys()):
+                return parsed
+        except Exception as e:
+            logger.warning(f"Localization to {target} failed: {e}")
+        return texts
+
+    # ------------------------------------------------------------------
     # Public API
     # ------------------------------------------------------------------
 
@@ -211,51 +278,83 @@ class CropAnalysisService:
         vision_result.setdefault("days_to_harvest_estimate", "—")
         vision_result.setdefault("confidence", 0.5)
 
-        crop = vision_result.get("crop_type", "")
+        # Normalize crop name to strip scientific names / extra descriptors
+        raw_crop = vision_result.get("crop_type", "")
+        crop = _normalize_crop_name(raw_crop)
+        vision_result["crop_type"] = crop.title() if crop else raw_crop
         disease = vision_result.get("disease_name", "")
 
         # Step 2: RAG retrieval for treatments
         knowledge = self.kb.retrieve(crop, disease)
         treatment = "Consult local KVK or agricultural officer for precise diagnosis."
         pesticide = "—"
+        organic_tip = "—"
+        preventive = "—"
         if knowledge:
             top = knowledge[0]
             treatment = top.get("treatment", treatment)
             pesticide = top.get("fertilizer", "—")
+            organic_tip = top.get("organic", "—")
+            preventive = top.get("preventive", "—")
+        else:
+            # For healthy crops with no disease match, retrieve preventive info
+            prev_knowledge = self.kb.retrieve(crop, None)
+            if prev_knowledge:
+                top = prev_knowledge[0]
+                preventive = top.get("preventive", "—")
+                organic_tip = top.get("organic", "—")
+                pesticide = top.get("fertilizer", "—")
 
         # Step 3: Enrich with price / harvest
-        market_price = self.kb.get_price(crop)
         harvest = self.kb.get_harvest(crop)
 
-        # Step 4: Build localized summary (placeholder — can be piped through TTS service)
-        summary_parts = [
-            f"Crop: {crop}.",
-            vision_result["health_status"],
-        ]
+        # Step 3b: Web search for real-time market price + location context
+        market_price = await self._fetch_market_price(crop, language)
+
+        # Step 4: Localize all text strings to user's language via LLM
+        texts_to_translate = {
+            "health_status": vision_result["health_status"],
+            "treatment": treatment,
+            "pesticide": pesticide,
+            "organic": organic_tip,
+            "preventive": preventive,
+            "harvest": harvest,
+        }
+        translated = await self._localize_texts(texts_to_translate, language)
+
+        # Build localized summary
         if vision_result["disease_detected"]:
-            summary_parts.append(
-                f"Detected {vision_result['disease_name']}. Treatment: {treatment}. "
-                f"Suggested input: {pesticide}."
-            )
+            summary_parts = [
+                translated["health_status"],
+                f"Disease detected: {vision_result['disease_name']}. {translated['treatment']}",
+                f"Recommended input: {translated['pesticide']}.",
+            ]
         else:
-            summary_parts.append("No disease detected. Crop is healthy.")
-        summary_parts.append(f"Estimated harvest: {harvest}. Market price: ₹{market_price} per quintal.")
+            summary_parts = [
+                translated["health_status"],
+                f"Preventive care: {translated['preventive']}",
+                f"Recommended input: {translated['pesticide']}.",
+            ]
+        summary_parts.append(
+            f"Estimated harvest: {translated['harvest']}. Market price: ₹{market_price}."
+        )
         summary = " ".join(summary_parts)
 
         return {
-            "crop_type": crop,
+            "crop_type": vision_result["crop_type"],
             "health_score": vision_result["health_score"],
-            "health_status": vision_result["health_status"],
+            "health_status": translated["health_status"],
             "disease_detected": vision_result["disease_detected"],
             "disease_name": vision_result["disease_name"],
             "symptoms_observed": vision_result["symptoms_observed"],
             "growth_stage": vision_result["growth_stage"],
-            "harvest_estimate": harvest,
-            "market_price_estimate": f"₹{market_price} / quintal",
-            "treatment_recommendation": treatment,
-            "pesticide_fertilizer": pesticide,
+            "harvest_estimate": translated["harvest"],
+            "market_price_estimate": f"₹{market_price}",
+            "treatment_recommendation": translated["treatment"] if vision_result["disease_detected"] else translated["preventive"],
+            "pesticide_fertilizer": translated["pesticide"],
+            "organic_recommendation": translated["organic"],
             "confidence": vision_result["confidence"],
             "summary": summary,
-            "rag_sources": [k["disease"] for k in knowledge],
+            "rag_sources": [k["disease"] for k in knowledge] if knowledge else [k["disease"] for k in self.kb.retrieve(crop, None)],
             "model_used": "nvidia_nim" if self.use_nvidia else ("llm_fallback" if self.llm else "demo_mock"),
         }

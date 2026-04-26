@@ -254,13 +254,37 @@ export default function CropAnalysis() {
           )}
 
           {!result.disease_detected && (
-            <div className="card-glass" style={{ margin: '0 16px 12px', padding: '16px', display: 'flex', alignItems: 'center', gap: 12, background: 'linear-gradient(135deg, #ecfdf5, #d1fae5)' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 36, color: 'var(--color-success)' }}>verified</span>
-              <div>
-                <p style={{ margin: 0, fontWeight: 700, color: 'var(--color-success)' }}>{t('cropAnalysis.noDisease')}</p>
-                <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--color-secondary)' }}>{result.health_status}</p>
+            <>
+              <div className="card-glass" style={{ margin: '0 16px 12px', padding: '16px', display: 'flex', alignItems: 'center', gap: 12, background: 'linear-gradient(135deg, #ecfdf5, #d1fae5)' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 36, color: 'var(--color-success)' }}>verified</span>
+                <div>
+                  <p style={{ margin: 0, fontWeight: 700, color: 'var(--color-success)' }}>{t('cropAnalysis.noDisease')}</p>
+                  <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--color-secondary)' }}>{result.health_status}</p>
+                </div>
               </div>
-            </div>
+
+              {/* Preventive care for healthy crops */}
+              {result.pesticide_fertilizer && result.pesticide_fertilizer !== '—' && (
+                <div className="card-glass" style={{ margin: '0 16px 12px', padding: '16px', borderLeft: '4px solid var(--color-primary)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                    <span className="material-symbols-outlined" style={{ color: 'var(--color-primary)' }}>spa</span>
+                    <div>
+                      <p style={{ margin: 0, fontWeight: 700, fontSize: '15px', color: 'var(--color-primary-dark)' }}>{lang === 'hi' ? 'सुझाया गया उर्वरक / देखभाल' : lang === 'mr' ? 'सुचवलेले खत / काळजी' : 'Recommended Fertilizer / Care'}</p>
+                    </div>
+                  </div>
+                  <div style={{ background: 'rgba(16,185,129,0.06)', borderRadius: '10px', padding: '12px', marginBottom: 10 }}>
+                    <p style={{ margin: '0 0 6px', fontSize: '12px', fontWeight: 700, color: 'var(--color-primary-dark)', textTransform: 'uppercase' }}>{t('cropAnalysis.pesticide')}</p>
+                    <p style={{ margin: 0, fontSize: '14px', color: 'var(--color-on-surface)' }}>{result.pesticide_fertilizer}</p>
+                  </div>
+                  {result.organic_recommendation && result.organic_recommendation !== '—' && (
+                    <div style={{ background: 'rgba(16,185,129,0.04)', borderRadius: '10px', padding: '12px' }}>
+                      <p style={{ margin: '0 0 6px', fontSize: '12px', fontWeight: 700, color: 'var(--color-success)', textTransform: 'uppercase' }}>{lang === 'hi' ? 'जैविक विकल्प' : lang === 'mr' ? 'सेंद्रिय पर्याय' : 'Organic Option'}</p>
+                      <p style={{ margin: 0, fontSize: '14px', color: 'var(--color-on-surface)' }}>{result.organic_recommendation}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
           )}
 
           {/* Harvest & Market */}
