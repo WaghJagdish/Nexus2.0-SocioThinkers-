@@ -148,6 +148,21 @@ export function AppDataProvider({ children }) {
     }
   }, [lang, profile.latitude, profile.longitude, profile.userId, refreshDocuments, saveResult]);
 
+  const addToQueue = useCallback((item) => {
+    const queueItem = {
+      id: crypto.randomUUID(),
+      created_at: new Date().toISOString(),
+      ...item,
+    };
+    setPendingQueue((current) => {
+      const next = [queueItem, ...current];
+      localStorage.setItem('kisansetu_pending_queue', JSON.stringify(next));
+      return next;
+    });
+    setStatus((current) => ({ ...current, message: 'Saved locally for later sync' }));
+    return queueItem;
+  }, []);
+
   const clearLocalData = useCallback(() => {
     localStorage.removeItem('kisansetu_latest_result');
     localStorage.removeItem('kisansetu_pending_queue');
@@ -171,9 +186,10 @@ export function AppDataProvider({ children }) {
     runTextQuery,
     runVoiceQuery,
     useCurrentLocation,
+    addToQueue,
     clearLocalData,
     documentUrl,
-  }), [apiBase, updateApiBase, profile, updateProfile, health, refreshHealth, documents, refreshDocuments, latestResult, pendingQueue, status, runTextQuery, runVoiceQuery, useCurrentLocation, clearLocalData]);
+  }), [apiBase, updateApiBase, profile, updateProfile, health, refreshHealth, documents, refreshDocuments, latestResult, pendingQueue, status, runTextQuery, runVoiceQuery, useCurrentLocation, addToQueue, clearLocalData]);
 
   // Clear cached result when language changes so next query uses the new language
   const prevLangRef = useRef(lang);

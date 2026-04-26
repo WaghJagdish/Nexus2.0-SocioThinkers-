@@ -5,7 +5,7 @@ import MainLayout from './layouts/MainLayout';
 import Dashboard from './pages/Dashboard';
 import Fields    from './pages/Fields';
 import Voice     from './pages/Voice';
-import Sync      from './pages/Sync';
+import CropAnalysis from './pages/CropAnalysis';
 import Offline   from './pages/Offline';
 import Settings  from './pages/Settings';
 import SchemeChat from './pages/SchemeChat';
@@ -21,7 +21,7 @@ export default function App() {
               <Route index        element={<Dashboard />} />
               <Route path="fields"   element={<Fields />} />
               <Route path="voice"    element={<Voice />} />
-              <Route path="sync"     element={<Sync />} />
+              <Route path="analysis" element={<CropAnalysis />} />
               <Route path="offline"  element={<Offline />} />
               <Route path="settings" element={<Settings />} />
               <Route path="scheme-chat" element={<SchemeChat />} />

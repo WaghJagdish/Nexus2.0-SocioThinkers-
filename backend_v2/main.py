@@ -14,6 +14,7 @@ from core.exceptions import ApplicationException, ErrorResponse
 from core.container import setup_container, get_container
 from api.routes import router
 from pipeline.endpoints import router as scheme_router
+from pipeline.crop_endpoints import router as crop_router
 
 logger = get_logger(__name__)
 
@@ -118,6 +119,7 @@ def create_app() -> FastAPI:
 
     app.include_router(router)
     app.include_router(scheme_router)
+    app.include_router(crop_router)
 
     @app.get("/")
     async def root():

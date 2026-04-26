@@ -5,7 +5,7 @@
     "dashboard": "Dashboard",
     "fields": "Schemes",
     "voice": "Voice",
-    "sync": "Sync",
+    "analysis": "Crop Scan",
     "settings": "Settings"
   },
   "lang": {
@@ -241,14 +241,25 @@
     "foggy": "Foggy",
     "drizzle": "Drizzle",
     "rain": "Rain",
-    "snow": "Snow",
-    "showers": "Showers",
-    "heavySnow": "Heavy Snow",
-    "thunderstorm": "Thunderstorm",
-    "unknown": "Unknown"
+    "snow": "Snow"
   },
-  "common": {
-    "locationNotSet": "Location not set",
-    "error": "Error"
+  "cropAnalysis": {
+    "title": "Crop Health Scanner",
+    "subtitle": "Take a photo of your crop to detect diseases, estimate harvest time, and get treatment advice.",
+    "takePhoto": "Take Photo",
+    "uploadImage": "Upload from Gallery",
+    "analyzing": "Analyzing with AI vision...",
+    "cropHealth": "Crop Health",
+    "diseaseDetected": "Disease Detected",
+    "noDisease": "No disease detected — crop looks healthy!",
+    "treatment": "Recommended Treatment",
+    "pesticide": "Suggested Pesticide / Fertilizer",
+    "harvestTime": "Estimated Harvest Time",
+    "marketPrice": "Estimated Market Price",
+    "confidence": "Confidence",
+    "retry": "Analyze Another",
+    "speakResult": "Read aloud",
+    "offlineQueued": "Image queued — will analyze when online",
+    "error": "Could not analyze image. Please try again."
   }
 }

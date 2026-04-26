@@ -68,6 +68,8 @@ async def setup_container() -> Container:
     from services.eligibility_engine import HybridEligibilityEngine
     from services.retrieval_service import SchemeRetriever
     from services.form_filler import PDFFormFiller
+    from services.crop_analysis_service import CropAnalysisService
+    from services.crop_knowledge_base import CropKnowledgeBase
     from repositories.farmer_repository import FarmerRepository
     from repositories.interaction_repository import InteractionRepository
     from repositories.scheme_repository import SchemeRepository
@@ -144,6 +146,16 @@ async def setup_container() -> Container:
         form_filler=form_filler,
     )
     container.register_singleton("scheme_orchestrator", scheme_orchestrator)
+
+    # Crop Analysis: NVIDIA NIM vision + RAG knowledge
+    crop_kb = CropKnowledgeBase()
+    container.register_singleton("crop_knowledge_base", crop_kb)
+
+    crop_analysis_service = CropAnalysisService(
+        llm_service=llm_service,
+        knowledge_base=crop_kb,
+    )
+    container.register_singleton("crop_analysis_service", crop_analysis_service)
 
     logger.info("Dependency injection container setup complete")
     return container

@@ -6,7 +6,7 @@ const NAV_ITEMS = [
   { to: '/',         icon: 'dashboard',   labelKey: 'nav.dashboard' },
   { to: '/fields',   icon: 'potted_plant',labelKey: 'nav.fields'    },
   { to: '/voice',    icon: 'mic',         labelKey: 'nav.voice'     },
-  { to: '/sync',     icon: 'sync',        labelKey: 'nav.sync'      },
+  { to: '/analysis',  icon: 'eco',         labelKey: 'nav.analysis'  },
   { to: '/settings', icon: 'settings',    labelKey: 'nav.settings'  },
 ];
 

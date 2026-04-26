@@ -129,3 +129,24 @@ export async function confirmSchemeSubmission({ threadId, approved }) {
   });
   return parseResponse(response);
 }
+
+export async function analyzeCropImage({
+  userId,
+  imageBase64,
+  language,
+  latitude,
+  longitude,
+}) {
+  const response = await fetch(`${getApiBase()}/api/v1/crop/analyze`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      user_id: userId,
+      image_base64: imageBase64,
+      language: language || 'hi',
+      latitude: latitude || null,
+      longitude: longitude || null,
+    }),
+  });
+  return parseResponse(response);
+}
