@@ -104,6 +104,7 @@ export default function SchemeChat() {
   const chunksRef = useRef([]);
   const streamRef = useRef(null);
   const recognitionRef = useRef(null);
+  const finalTranscriptRef = useRef('');
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -256,6 +257,7 @@ export default function SchemeChat() {
   const startRecording = async () => {
     window.speechSynthesis.cancel();
     setLiveTranscript('');
+    finalTranscriptRef.current = '';
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
@@ -284,16 +286,17 @@ export default function SchemeChat() {
         recognition.continuous = true;
         recognition.interimResults = true;
         recognition.onresult = (event) => {
-          let interim = '', final = '';
+          let interim = '';
           for (let i = event.resultIndex; i < event.results.length; i++) {
             const tr = event.results[i][0].transcript;
-            if (event.results[i].isFinal) final += tr + ' ';
-            else interim += tr;
+            if (event.results[i].isFinal) {
+              finalTranscriptRef.current += tr + ' ';
+            } else {
+              interim = tr;
+            }
           }
-          setLiveTranscript(prev => {
-            const base = final ? (prev.replace(/…$/, '') + final).trim() : prev;
-            return interim ? `${base} ${interim}…`.trim() : base;
-          });
+          const display = (finalTranscriptRef.current + interim).trim();
+          setLiveTranscript(display);
         };
         recognition.onerror = (e) => { console.log('Speech recognition error:', e.error); };
         recognition.onend = () => {
@@ -315,7 +318,8 @@ export default function SchemeChat() {
     if (recorderRef.current && recorderRef.current.state !== 'inactive') recorderRef.current.stop();
     setRecording(false);
 
-    const text = liveTranscript.replace(/…$/, '').trim();
+    const text = (finalTranscriptRef.current || liveTranscript || '').replace(/…$/, '').trim();
+    finalTranscriptRef.current = '';
     if (text) {
       sendMessage(text);
     }
