@@ -1,0 +1,448 @@
+openapi: 3.0.0
+info:
+  title: Nexus Agricultural Advisory API
+  description: Multi-agent system for crop recommendations and scheme navigation
+  version: 2.0.0
+  contact:
+    name: Nexus Support
+    email: support@nexus.example.com
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Development server
+  - url: https://api.nexus.example.com/api/v1
+    description: Production server
+
+paths:
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Check the health status of all services
+      operationId: getHealth
+      tags:
+        - System
+      responses:
+        '200':
+          description: All services are healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: One or more services are unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /text/query:
+    post:
+      summary: Process text query for crop recommendations
+      description: |
+        Send a text query to get crop recommendations based on location and weather data.
+        Supports all 11 Indian languages.
+      operationId: processTextQuery
+      tags:
+        - Advisory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TextQueryRequest'
+            examples:
+              hindiExample:
+                value:
+                  user_id: "farmer_12345"
+                  text: "मुझे इंदौर में क्या उगाना चाहिए?"
+                  latitude: 22.7196
+                  longitude: 75.8577
+                  device_language: "hi"
+              englishExample:
+                value:
+                  user_id: "farmer_12345"
+                  text: "What should I grow in Indore?"
+                  latitude: 22.7196
+                  longitude: 75.8577
+                  device_language: "en"
+      responses:
+        '200':
+          description: Successfully processed query and returned recommendations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdviceResponse'
+              examples:
+                successExample:
+                  value:
+                    session_id: "550e8400-e29b-41d4-a716-446655440000"
+                    status: "success"
+                    response_text: "आपके क्षेत्र में गेहूं और सोयाबीन उगाने के लिए अच्छे हैं क्योंकि वर्षा और तापमान दोनों अनुकूल हैं।"
+                    recommended_crop: "wheat"
+                    matched_schemes:
+                      - id: "pm_kisan_001"
+                        name: "PM-KISAN Samman Nidhi"
+                        benefits: "₹6,000 per year"
+        '400':
+          description: Invalid input parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /voice/sync:
+    post:
+      summary: Process voice input for crop recommendations
+      description: |
+        Upload an audio file containing a question in any of the 11 supported Indian languages.
+        The system will transcribe, understand, provide recommendations, and synthesize a response.
+      operationId: processVoiceQuery
+      tags:
+        - Advisory
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VoiceQueryRequest'
+      responses:
+        '200':
+          description: Successfully processed voice query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdviceResponse'
+              examples:
+                successExample:
+                  value:
+                    session_id: "660f9511-f40c-52e5-b827-557766551111"
+                    status: "success"
+                    response_text: "आपके क्षेत्र में गेहूं उगाना सबसे अच्छा है।"
+                    response_audio_url: "https://nexus.example.com/audio/660f9511.mp3"
+                    recommended_crop: "wheat"
+                    generated_pdf_url: "https://nexus.example.com/pdfs/660f9511.pdf"
+        '400':
+          description: Invalid audio file or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '413':
+          description: Audio file too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Speech service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    TextQueryRequest:
+      type: object
+      required:
+        - user_id
+        - text
+      properties:
+        user_id:
+          type: string
+          description: Unique identifier for the farmer
+          example: "farmer_12345"
+        text:
+          type: string
+          description: Question or query text
+          example: "What crops should I grow in monsoon?"
+          minLength: 1
+          maxLength: 1000
+        latitude:
+          type: number
+          format: float
+          description: Geographic latitude
+          default: 0.0
+          example: 22.7196
+        longitude:
+          type: number
+          format: float
+          description: Geographic longitude
+          default: 0.0
+          example: 75.8577
+        device_language:
+          type: string
+          description: Language code (ISO 639-1)
+          default: "hi"
+          enum:
+            - hi
+            - mr
+            - gu
+            - te
+            - ta
+            - kn
+            - ml
+            - pa
+            - bn
+            - as
+            - en
+          example: "hi"
+
+    VoiceQueryRequest:
+      type: object
+      required:
+        - audio_file
+        - user_id
+      properties:
+        audio_file:
+          type: string
+          format: binary
+          description: Audio file in WAV, MP3, or OGG format
+        user_id:
+          type: string
+          description: Unique identifier for the farmer
+          example: "farmer_12345"
+        latitude:
+          type: number
+          format: float
+          description: Geographic latitude
+          default: 0.0
+          example: 22.7196
+        longitude:
+          type: number
+          format: float
+          description: Geographic longitude
+          default: 0.0
+          example: 75.8577
+        device_language:
+          type: string
+          description: Language code
+          default: "hi"
+          enum:
+            - hi
+            - mr
+            - gu
+            - te
+            - ta
+            - kn
+            - ml
+            - pa
+            - bn
+            - as
+            - en
+          example: "hi"
+
+    AdviceResponse:
+      type: object
+      required:
+        - session_id
+        - status
+        - response_text
+      properties:
+        session_id:
+          type: string
+          format: uuid
+          description: Unique session identifier for tracing
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        status:
+          type: string
+          enum:
+            - success
+            - partial
+            - error
+          description: Status of the request
+          example: "success"
+        response_text:
+          type: string
+          description: Recommendation or advice in the requested language
+          example: "गेहूं आपके क्षेत्र के लिए सबसे उपयुक्त है।"
+        response_audio_url:
+          type: string
+          format: uri
+          description: URL to synthesized audio response (voice queries only)
+          example: "https://nexus.example.com/audio/550e8400.mp3"
+          nullable: true
+        recommended_crop:
+          type: string
+          description: Name of the top recommended crop
+          example: "wheat"
+          nullable: true
+        matched_schemes:
+          type: array
+          description: Government schemes matching the crop and location
+          items:
+            $ref: '#/components/schemas/SchemeInfo'
+          nullable: true
+        generated_pdf_url:
+          type: string
+          format: uri
+          description: URL to generated PDF for scheme application (if applicable)
+          example: "https://nexus.example.com/pdfs/550e8400.pdf"
+          nullable: true
+
+    SchemeInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique scheme identifier
+          example: "pm_kisan_001"
+        name:
+          type: string
+          description: Scheme name
+          example: "PM-KISAN Samman Nidhi"
+        description:
+          type: string
+          description: Brief description of the scheme
+          example: "Direct income support to farmers"
+        benefits:
+          type: string
+          description: Benefits provided by the scheme
+          example: "₹6,000 per year"
+        eligibility:
+          type: array
+          items:
+            type: string
+          description: Eligibility criteria
+          example:
+            - "Land holdings up to 2 hectares"
+            - "Indian citizenship"
+        state:
+          type: string
+          description: Applicable state
+          example: "Madhya Pradesh"
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Overall system status
+          example: "healthy"
+        version:
+          type: string
+          description: API version
+          example: "2.0.0"
+        services:
+          type: object
+          description: Individual service health status
+          properties:
+            database:
+              type: string
+              enum:
+                - healthy
+                - unhealthy
+              example: "healthy"
+            llm:
+              type: string
+              enum:
+                - healthy
+                - unhealthy
+              example: "healthy"
+            cache:
+              type: string
+              enum:
+                - healthy
+                - unhealthy
+              example: "healthy"
+
+    ErrorResponse:
+      type: object
+      required:
+        - error_code
+        - message
+        - status_code
+      properties:
+        error_code:
+          type: string
+          description: Standard error code for programmatic handling
+          enum:
+            - VALIDATION_ERROR
+            - TRANSCRIPTION_FAILED
+            - SYNTHESIS_FAILED
+            - DATABASE_ERROR
+            - EXTERNAL_API_ERROR
+            - AGENT_ERROR
+            - AUTH_FAILED
+            - RATE_LIMIT_EXCEEDED
+            - NOT_FOUND
+            - CONFLICT
+            - INTERNAL_ERROR
+            - SERVICE_UNAVAILABLE
+            - TIMEOUT
+            - INVALID_REQUEST
+          example: "VALIDATION_ERROR"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Invalid latitude/longitude values"
+        details:
+          type: object
+          description: Additional error details
+          example:
+            field: "latitude"
+            reason: "Value must be between -90 and 90"
+          nullable: true
+        status_code:
+          type: integer
+          description: HTTP status code
+          example: 400
+        request_id:
+          type: string
+          format: uuid
+          description: Request ID for debugging
+          example: "550e8400-e29b-41d4-a716-446655440000"
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for authentication (future support)
+
+tags:
+  - name: System
+    description: System health and status endpoints
+  - name: Advisory
+    description: Crop recommendation and advisory endpoints
+
+x-information:
+  rate_limit:
+    requests_per_minute: 60
+    requests_per_day: 1000
+  supported_languages:
+    - hi (Hindi)
+    - mr (Marathi)
+    - gu (Gujarati)
+    - te (Telugu)
+    - ta (Tamil)
+    - kn (Kannada)
+    - ml (Malayalam)
+    - pa (Punjabi)
+    - bn (Bengali)
+    - as (Assamese)
+    - en (English)
+  audio_formats:
+    - wav
+    - mp3
+    - ogg
+  max_audio_size_mb: 10
+  response_time_sla_ms: 5000

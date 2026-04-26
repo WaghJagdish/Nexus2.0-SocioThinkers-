@@ -1,0 +1,161 @@
+INFO:     Will watch for changes in these directories: ['C:\\Users\\Ibrahim Shaikh\\OneDrive\\Desktop\\ibrahim\\nexus\\backend']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [3824] using WatchFiles
+INFO:     Started server process [11676]
+INFO:     Waiting for application startup.
+2026-04-25 21:40:20,269 [INFO] main: Kisan Setu backend starting...
+2026-04-25 21:40:20,269 [INFO] main: Building agent graph...
+2026-04-25 21:40:22,889 [INFO] core.agent_registry: Registered agent: [crop_sowing_agent] Crop Sowing & Agricultural Advisor v1.0.0
+2026-04-25 21:40:23,678 [INFO] core.agent_registry: Registered agent: [scheme_navigator_agent] Government Scheme Navigator & Application Assistant v1.0.0
+2026-04-25 21:40:23,687 [INFO] core.orchestrator: Graph node added: [crop_sowing_agent]
+2026-04-25 21:40:23,687 [INFO] core.orchestrator: Graph node added: [scheme_navigator_agent]
+2026-04-25 21:40:23,707 [INFO] main: Agent graph ready
+INFO:     Application startup complete.
+INFO:     127.0.0.1:64124 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61234 - "GET /api/v1/schemes/documents/farmer-demo-user HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64124 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61234 - "GET /api/v1/schemes/documents/farmer-demo-user HTTP/1.1" 200 OK
+2026-04-25 22:01:51,231 [INFO] api.routes: [5abe0d56-0fe7-4a62-a8a1-7112b5cef4b1] Voice request: user=farmer-demo-user, lang=hi, file=query-1777134710906.webm
+2026-04-25 22:02:04,111 [WARNING] services.database_service: Idempotency check failed: [Errno 11001] getaddrinfo failed
+2026-04-25 22:02:04,111 [INFO] api.routes: [5abe0d56-0fe7-4a62-a8a1-7112b5cef4b1] Audio file size: 6426 bytes
+2026-04-25 22:02:04,111 [INFO] api.routes: [5abe0d56-0fe7-4a62-a8a1-7112b5cef4b1] Starting transcription with language hi
+2026-04-25 22:02:04,111 [INFO] services.bhashini_service: Transcribing audio: lang=hi-IN, size=6426 bytes
+INFO:     127.0.0.1:60972 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61446 - "GET /api/v1/schemes/documents/farmer-demo-user HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60467 - "GET /api/v1/schemes/documents/farmer-demo-user HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54684 - "GET /health HTTP/1.1" 200 OK
+2026-04-25 22:02:15,844 [ERROR] services.bhashini_service: Sarvam HTTP error: [Errno 11001] getaddrinfo failed
+Traceback (most recent call last):
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 394, in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpcore\_async\connection_pool.py", line 256, in handle_async_request
+    raise exc from None
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpcore\_async\connection_pool.py", line 236, in handle_async_request
+    response = await connection.handle_async_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpcore\_async\connection.py", line 101, in handle_async_request
+    raise exc
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpcore\_async\connection.py", line 78, in handle_async_request
+    stream = await self._connect(request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpcore\_async\connection.py", line 124, in _connect
+    stream = await self._network_backend.connect_tcp(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpcore\_backends\auto.py", line 31, in connect_tcp
+    return await self._backend.connect_tcp(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpcore\_backends\anyio.py", line 113, in connect_tcp
+    with map_exceptions(exc_map):
+  File "C:\Users\Ibrahim Shaikh\AppData\Local\Programs\Python\Python311\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [Errno 11001] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\services\bhashini_service.py", line 50, in transcribe_audio
+    response = await client.post(
+               ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpx\_client.py", line 1859, in post
+    return await self.request(
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpx\_client.py", line 1540, in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpx\_client.py", line 1629, in send
+    response = await self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpx\_client.py", line 1657, in _send_handling_auth
+    response = await self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpx\_client.py", line 1694, in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpx\_client.py", line 1730, in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 393, in handle_async_request
+    with map_httpcore_exceptions():
+  File "C:\Users\Ibrahim Shaikh\AppData\Local\Programs\Python\Python311\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [Errno 11001] getaddrinfo failed
+2026-04-25 22:02:15,860 [ERROR] api.routes: [5abe0d56-0fe7-4a62-a8a1-7112b5cef4b1] Transcription failed: Speech-to-text service error: [Errno 11001] getaddrinfo failed
+Traceback (most recent call last):
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 394, in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpcore\_async\connection_pool.py", line 256, in handle_async_request
+    raise exc from None
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpcore\_async\connection_pool.py", line 236, in handle_async_request
+    response = await connection.handle_async_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpcore\_async\connection.py", line 101, in handle_async_request
+    raise exc
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpcore\_async\connection.py", line 78, in handle_async_request
+    stream = await self._connect(request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpcore\_async\connection.py", line 124, in _connect
+    stream = await self._network_backend.connect_tcp(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpcore\_backends\auto.py", line 31, in connect_tcp
+    return await self._backend.connect_tcp(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpcore\_backends\anyio.py", line 113, in connect_tcp
+    with map_exceptions(exc_map):
+  File "C:\Users\Ibrahim Shaikh\AppData\Local\Programs\Python\Python311\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [Errno 11001] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\services\bhashini_service.py", line 50, in transcribe_audio
+    response = await client.post(
+               ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpx\_client.py", line 1859, in post
+    return await self.request(
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpx\_client.py", line 1540, in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpx\_client.py", line 1629, in send
+    response = await self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpx\_client.py", line 1657, in _send_handling_auth
+    response = await self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpx\_client.py", line 1694, in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpx\_client.py", line 1730, in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 393, in handle_async_request
+    with map_httpcore_exceptions():
+  File "C:\Users\Ibrahim Shaikh\AppData\Local\Programs\Python\Python311\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [Errno 11001] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\api\routes.py", line 94, in voice_sync
+    transcription = await transcribe_audio(
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ibrahim Shaikh\OneDrive\Desktop\ibrahim\nexus\backend\services\bhashini_service.py", line 81, in transcribe_audio
+    raise RuntimeError(f"Speech-to-text service error: {e}") from e
+RuntimeError: Speech-to-text service error: [Errno 11001] getaddrinfo failed
+INFO:     127.0.0.1:58717 - "POST /api/v1/voice/sync HTTP/1.1" 503 Service Unavailable
